@@ -1,0 +1,113 @@
+{
+  "theme": "DARK",
+  "archetype": "4 (Swiss & High-Contrast - Mission Control Variant)",
+  "design_philosophy": {
+    "core_principles": [
+      "Authoritative and precise mission-control aesthetic",
+      "High information density with clear visual hierarchy",
+      "Traffic-light logic (Green/Amber/Red) for instant cognitive recognition of risks",
+      "Strict grid adherence with 'Grid Borders' surface strategy"
+    ],
+    "emotional_tone": "Futuristic, technical, tense yet controlled, professional"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Chivo, sans-serif",
+      "body": "IBM Plex Sans, sans-serif",
+      "mono_metrics": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1_hero": "text-4xl sm:text-5xl tracking-tighter font-bold",
+      "h2_section": "text-2xl sm:text-3xl tracking-tight font-semibold",
+      "h3_widget": "text-lg sm:text-xl font-medium tracking-wide uppercase text-slate-400",
+      "body": "text-sm text-slate-300",
+      "metrics_large": "text-5xl sm:text-6xl font-black font-mono tracking-tight",
+      "labels": "text-xs font-bold uppercase tracking-[0.2em] text-slate-500"
+    }
+  },
+  "colors": {
+    "background": {
+      "app": "#030305",
+      "surface": "#090A0F",
+      "surface_hover": "#11131A"
+    },
+    "borders": {
+      "default": "#1E2330",
+      "active": "#3B82F6"
+    },
+    "text": {
+      "primary": "#F8FAFC",
+      "secondary": "#94A3B8",
+      "muted": "#475569"
+    },
+    "status": {
+      "safe_low": "#10B981",
+      "warning_medium": "#F59E0B",
+      "danger_high": "#EF4444",
+      "kessler_syndrome": "#B91C1C",
+      "info_accent": "#06B6D4"
+    }
+  },
+  "spacing_and_layout": {
+    "grid_strategy": "Control Room Grid (Dense, functional, max viewport usage)",
+    "container_padding": "p-4 md:p-6",
+    "widget_padding": "p-4",
+    "gap": "gap-4 md:gap-6",
+    "border_radius": "rounded-none md:rounded-sm",
+    "layout_structure": {
+      "sidebar": "col-span-1 flex flex-col gap-4",
+      "main_canvas": "col-span-1 md:col-span-2 lg:col-span-3 min-h-[60vh] relative border border-slate-800 bg-black overflow-hidden"
+    }
+  },
+  "surfaces_and_materials": {
+    "cards": "Flat solid background (#090A0F) with 1px precise border (#1E2330). No heavy shadows. 'Grid Borders' look.",
+    "kessler_banner": "High contrast repeating linear gradient (black and red stripes), glowing text, sticky top.",
+    "buttons": "Sharp edges (rounded-none), solid primary/accent color on hover, 1px border default."
+  },
+  "components": {
+    "dashboard_widgets": {
+      "description": "Metric cards for Satellite Count, Debris Count, Risk Level. Use large monospace typography for numbers.",
+      "shadcn_overrides": "Remove card rounded corners, make borders 1px solid slate-800, flat backgrounds."
+    },
+    "simulation_canvas": {
+      "description": "HTML5 Canvas overlaid on top of a starfield background. Earth in center. Satellites drawn as sharp dots/triangles. Connection lines dynamically colored based on distance (Green > Yellow > Red).",
+      "pseudo_3d": "Scale objects based on simulated Z-axis for depth."
+    },
+    "controls_panel": {
+      "description": "Keyboard shortcut hints styled as physical keycaps (Kbd component). Speed slider, Add satellite toggle."
+    }
+  },
+  "motion_and_interactions": {
+    "hover_states": "Subtle background lightening, text color shift to pure white. Borders illuminate to accent color.",
+    "canvas_animations": "60fps requestAnimationFrame loop. Smooth orbits.",
+    "kessler_trigger": "Aggressive screen shake effect (CSS animation), banner drops down, ambient red glow overlay on canvas."
+  },
+  "media_and_assets": {
+    "icons_library": "Phosphor Icons (@phosphor-icons/react) - Use Duotone or Bold weights for technical readability.",
+    "images": [
+      {
+        "category": "background",
+        "description": "Starfield space background for parallax effect behind the canvas",
+        "url": "https://images.unsplash.com/photo-1773814776134-78acc1b8168f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwzfHxzdGFyZmllbGQlMjBzcGFjZSUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzc1MjM1MDE4fDA&ixlib=rb-4.1.0&q=85"
+      },
+      {
+        "category": "centerpiece",
+        "description": "High resolution Earth from space for the center of the orbital simulation",
+        "url": "https://images.unsplash.com/photo-1663427929868-3941f957bb36?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwxfHxoaWdoJTIwcmVzb2x1dGlvbiUyMGVhcnRoJTIwZnJvbSUyMHNwYWNlJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzc1MjM1MDQxfDA&ixlib=rb-4.1.0&q=85"
+      }
+    ]
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure all text against dark backgrounds passes WCAG AA (minimum 4.5:1).",
+    "testing_attributes": "All interactive elements (buttons, sliders, canvas overlay) MUST include data-testid (e.g., data-testid='speed-slider', data-testid='add-satellite-btn')."
+  },
+  "instructions_to_main_agent": [
+    "Use Phosphor icons for technical UI elements. Run `yarn add @phosphor-icons/react`.",
+    "Implement the simulation canvas using standard HTML5 Canvas API inside a React component.",
+    "Use JetBrains Mono for all numeric counters and metrics to emphasize the Mission Control theme.",
+    "Implement the 'Kessler Syndrome Warning Banner' with an aggressive diagonal striped red/black CSS pattern.",
+    "Ensure the layout mimics a dense 'Control Room' grid without excessive white space.",
+    "The 3D depth can be simulated by adjusting the scale (radius) and opacity of objects as they traverse their orbital paths.",
+    "Include standard Shadcn components for sliders and toggles, overriding their classes to match the sharp, cardless aesthetic."
+  ]
+}
