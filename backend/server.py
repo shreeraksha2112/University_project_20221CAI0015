@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, APIRouter, WebSocket, WebSocketDisconnect, UploadFile, File
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -108,7 +108,54 @@ async def add_satellite(request: AddSatelliteRequest):
 async def set_predictor_mode(request: PredictorModeRequest):
     """Set collision predictor mode"""
     success = simulation.set_predictor_mode(request.mode)
-    return {"status": "success" if success else "failed", "mode": request.mode}
+    model_info = simulation.predictor.get_model_info()
+    return {
+        "status": "success" if success else "failed",
+        "mode": request.mode,
+        "model_info": model_info
+    }
+
+@api_router.get("/ml/model-info")
+async def get_model_info():
+    """Get ML model information"""
+    return simulation.predictor.get_model_info()
+
+@api_router.post("/ml/train-model")
+async def train_model():
+    """Train a new ML model (runs in background)"""
+    try:
+        from ml_model import train_and_save_model
+        import threading
+        
+        def train_in_background():
+            try:
+                train_and_save_model()
+                # Reload model in predictor
+                simulation.predictor.load_ml_model('/app/backend/models/collision_model.pth')
+            except Exception as e:
+                logging.error(f"Background training failed: {e}")
+        
+        thread = threading.Thread(target=train_in_background)
+        thread.start()
+        
+        return {
+            "status": "training_started",
+            "message": "Model training started in background. This may take a few minutes."
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+@api_router.post("/ml/load-model")
+async def load_model(model_path: str = "/app/backend/models/collision_model.pth"):
+    """Load ML model from specified path"""
+    success = simulation.predictor.load_ml_model(model_path)
+    return {
+        "status": "success" if success else "failed",
+        "model_info": simulation.predictor.get_model_info()
+    }
 
 @api_router.websocket("/ws/simulation")
 async def websocket_endpoint(websocket: WebSocket):

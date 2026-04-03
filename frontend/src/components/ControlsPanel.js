@@ -2,6 +2,45 @@ import React from 'react';
 import { PlayIcon, PauseIcon, ArrowsClockwiseIcon, CaretUpIcon, CaretDownIcon } from '@phosphor-icons/react';
 
 const ControlsPanel = ({ stats, predictorMode, onTogglePause, onSpeedAdjust, onReset, onPredictorModeChange }) => {
+  const [modelInfo, setModelInfo] = React.useState(null);
+  const [isTraining, setIsTraining] = React.useState(false);
+
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+  React.useEffect(() => {
+    fetchModelInfo();
+  }, [predictorMode]);
+
+  const fetchModelInfo = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/ml/model-info`);
+      const data = await response.json();
+      setModelInfo(data);
+    } catch (error) {
+      console.error('Failed to fetch model info:', error);
+    }
+  };
+
+  const handleTrainModel = async () => {
+    setIsTraining(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/ml/train-model`, {
+        method: 'POST'
+      });
+      const data = await response.json();
+      alert(data.message || 'Training started!');
+      
+      // Poll for completion
+      setTimeout(() => {
+        fetchModelInfo();
+        setIsTraining(false);
+      }, 5000);
+    } catch (error) {
+      console.error('Failed to train model:', error);
+      setIsTraining(false);
+    }
+  };
+
   return (
     <div className="bg-[#090A0F] border border-[#1E2330] p-4 rounded-sm" data-testid="controls-panel">
       <h3 className="text-lg sm:text-xl font-medium tracking-wide uppercase text-slate-400 mb-4" style={{ fontFamily: 'Chivo, sans-serif' }}>
@@ -56,7 +95,7 @@ const ControlsPanel = ({ stats, predictorMode, onTogglePause, onSpeedAdjust, onR
       {/* Predictor Mode Toggle */}
       <div className="mb-6">
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500 block mb-2">Predictor Mode</span>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-2">
           <button
             onClick={() => onPredictorModeChange('rule-based')}
             className={`flex-1 font-bold py-2 px-3 border border-[#1E2330] transition-colors ${
@@ -80,6 +119,44 @@ const ControlsPanel = ({ stats, predictorMode, onTogglePause, onSpeedAdjust, onR
             ML
           </button>
         </div>
+        
+        {/* ML Model Status */}
+        {modelInfo && (
+          <div className="text-xs space-y-1 mt-2 p-2 bg-[#0a0b0f] border border-[#1E2330] rounded-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Model:</span>
+              <span className={modelInfo.model_loaded ? 'text-green-500' : 'text-red-500'}>
+                {modelInfo.model_loaded ? '● Loaded' : '○ Not Loaded'}
+              </span>
+            </div>
+            {modelInfo.model_loaded && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Device:</span>
+                  <span className="text-slate-300">{modelInfo.device}</span>
+                </div>
+                <button
+                  onClick={handleTrainModel}
+                  disabled={isTraining}
+                  className="w-full mt-2 bg-[#090A0F] hover:bg-[#11131A] text-slate-400 text-xs font-bold py-1 px-2 border border-[#1E2330] transition-colors disabled:opacity-50"
+                  data-testid="train-model-button"
+                >
+                  {isTraining ? 'TRAINING...' : 'RETRAIN MODEL'}
+                </button>
+              </>
+            )}
+            {!modelInfo.model_loaded && modelInfo.ml_available && (
+              <button
+                onClick={handleTrainModel}
+                disabled={isTraining}
+                className="w-full mt-2 bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold py-1 px-2 transition-colors disabled:opacity-50"
+                data-testid="train-model-button"
+              >
+                {isTraining ? 'TRAINING...' : 'TRAIN MODEL'}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Keyboard Shortcuts */}
